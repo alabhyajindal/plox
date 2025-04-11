@@ -8,9 +8,15 @@ class ParseError(Exception):
 
 
 class Parser:
-    def __init__(self):
-        self.tokens = []
+    def __init__(self, tokens):
+        self.tokens = tokens
         self.current = 0
+
+    def parse(self):
+        try:
+            return self.expression()
+        except ParseError:
+            return None
 
     def expression(self):
         return self.equality()
@@ -39,7 +45,7 @@ class Parser:
         return self.peek().type == type
 
     def advance(self):
-        if self.is_at_end():
+        if not self.is_at_end():
             self.current += 1
         return self.previous()
 
@@ -99,12 +105,14 @@ class Parser:
             return Literal(None)
 
         if self.match(TokenType.NUMBER, TokenType.STRING):
-            return Literal(self.previous().literal())
+            return Literal(self.previous().literal)
 
         if self.match(TokenType.LEFT_PAREN):
             expr = self.expression()
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return Grouping(expr)
+
+        raise self.error(self.peek(), 'Expect expression.')
 
     def consume(self, type, message):
         if self.check(type):
@@ -113,5 +121,26 @@ class Parser:
         raise self.error(self.peek(), message)
 
     def error(self, token, message):
-        Lox.error(token, message)
+        Lox.token_error(token, message)
         return ParseError()
+
+    def synchronize(self):
+        self.advance()
+
+        while not self.is_at_end():
+            if self.previous().type == TokenType.SEMICOLON:
+                return
+
+            if self._peek().type in (
+                TokenType.CLASS,
+                TokenType.FUN,
+                TokenType.VAR,
+                TokenType.FOR,
+                TokenType.IF,
+                TokenType.WHILE,
+                TokenType.PRINT,
+                TokenType.RETURN
+            ):
+                return
+
+            self.advance()

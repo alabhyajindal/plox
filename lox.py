@@ -1,4 +1,6 @@
 import sys
+from ast_printer import AstPrinter
+
 
 class Lox:
     had_error = False
@@ -7,16 +9,21 @@ class Lox:
         from scanner import Scanner
         scanner = Scanner(source)
         tokens = scanner.scan_tokens()
-        for token in tokens:
-            print(token)
+        from parser import Parser
+        parser = Parser(tokens)
+        expression = parser.parse()
 
+        if self.had_error:
+            return
+
+        print(AstPrinter().print(expression))
 
     def run_file(self, path):
         with open(path, 'r') as file:
             source = file.read()
         self.run(source)
-        if Lox.had_error: sys.exit(65)
-
+        if Lox.had_error:
+            sys.exit(65)
 
     def run_prompt(self):
         try:
@@ -33,6 +40,14 @@ class Lox:
     @staticmethod
     def error(line, message):
         Lox.report(line, '', message)
+
+    @staticmethod
+    def token_error(token, message):
+        from token_type import TokenType
+        if token.type == TokenType.EOF:
+            Lox.report(token.line, ' at end', message)
+        else:
+            Lox.report(token.line, f" at '{token.lexeme}'", message)
 
     @staticmethod
     def report(line, where, message):
