@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from token_type import TokenType
+from typing import Any
 
 
 @dataclass
 class Token:
     type: TokenType
     lexeme: str
-    literal: any
+    literal: Any
     line: int
 
     def __str__(self):
