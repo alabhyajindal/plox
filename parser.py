@@ -31,33 +31,6 @@ class Parser:
 
         return expr
 
-    def match(self, *token_types):
-        for token_type in token_types:
-            if self.check(token_type):
-                self.advance()
-                return True
-
-        return False
-
-    def check(self, type):
-        if self.is_at_end():
-            return False
-        return self.peek().type == type
-
-    def advance(self):
-        if not self.is_at_end():
-            self.current += 1
-        return self.previous()
-
-    def is_at_end(self):
-        return self.peek().type == TokenType.EOF
-
-    def peek(self):
-        return self.tokens[self.current]
-
-    def previous(self):
-        return self.tokens[self.current - 1]
-
     def comparison(self):
         expr = self.term()
 
@@ -113,6 +86,33 @@ class Parser:
             return Grouping(expr)
 
         raise self.error(self.peek(), 'Expect expression.')
+
+    def match(self, *token_types):
+        for token_type in token_types:
+            if self.check(token_type):
+                self.advance()
+                return True
+
+        return False
+
+    def check(self, type):
+        if self.is_at_end():
+            return False
+        return self.peek().type == type
+
+    def advance(self):
+        if not self.is_at_end():
+            self.current += 1
+        return self.previous()
+
+    def is_at_end(self):
+        return self.peek().type == TokenType.EOF
+
+    def peek(self):
+        return self.tokens[self.current]
+
+    def previous(self):
+        return self.tokens[self.current - 1]
 
     def consume(self, type, message):
         if self.check(type):

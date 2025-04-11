@@ -16,7 +16,7 @@ class Lox:
         if self.had_error:
             return
 
-        print(AstPrinter().print(expression))
+        print(expression)
 
     def run_file(self, path):
         with open(path, 'r') as file:
