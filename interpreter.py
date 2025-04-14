@@ -1,16 +1,27 @@
 from expr import *
+from stmt import *
 from token_type import TokenType
 from runtime_error import RuntimeError
 from error_reporter import ErrorReporter
 
 
 class Interpreter:
-    def interpret(self, expression):
+    def interpret(self, statements):
         try:
-            value = self.evaluate(expression)
-            print(self.stringify(value))
+            for statement in statements:
+                self.execute(statement)
         except RuntimeError as err:
             ErrorReporter.runtime_error(err)
+
+    def execute(self, stmt):
+        match stmt:
+            case ExpressionStmt():
+                self.evaluate(stmt.expression)
+                return None
+            case PrintStmt():
+                value = self.evaluate(stmt.expression)
+                print(self.stringify(value))
+                return None
 
     def evaluate(self, expr):
         match expr:

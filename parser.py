@@ -1,4 +1,5 @@
 from expr import *
+from stmt import *
 from token_type import TokenType
 from error_reporter import ErrorReporter
 
@@ -13,13 +14,30 @@ class Parser:
         self.current = 0
 
     def parse(self):
-        try:
-            return self.expression()
-        except ParseError:
-            return None
+        statements = []
+        while not self.is_at_end():
+            statements.append(self.statement())
+
+        return statements
 
     def expression(self):
         return self.equality()
+
+    def statement(self):
+        if self.match(TokenType.PRINT):
+            return self.print_statement()
+
+        return self.expression_statement()
+
+    def print_statement(self):
+        value = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return PrintStmt(value)
+
+    def expression_statement(self):
+        expr = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return ExpressionStmt(expr)
 
     def equality(self):
         expr = self.comparison()
