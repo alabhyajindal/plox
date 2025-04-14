@@ -1,6 +1,7 @@
 from lox import Lox
 from scanner import Scanner
 from parser import Parser
+from interpreter import Interpreter
 from token_type import TokenType
 from lox_token import Token
 from expr import *
@@ -42,6 +43,20 @@ def test_parser():
     parser = Parser(tokens)
     ast = parser.parse()
     assert ast == expected_ast, f"Expected:\n{expected_ast}, got:\n{ast}"
+
+
+def test_expr_eval():
+    source = '5 + 2 * 3'
+    expected_value = 11
+
+    scanner = Scanner(source)
+    tokens = scanner.scan_tokens()
+    parser = Parser(tokens)
+    expr = parser.parse()
+
+    interpreter = Interpreter()
+    # interpreter doesn't return a value, can modify it after completing stmt eval
+    interpreter.interpret(expr)
 
 
 if __name__ == "__main__":
