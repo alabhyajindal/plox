@@ -6,6 +6,8 @@ from error_reporter import ErrorReporter
 
 
 class Lox:
+    interpreter = Interpreter()
+
     def run(self, source):
         scanner = Scanner(source)
         tokens = scanner.scan_tokens()
@@ -15,8 +17,7 @@ class Lox:
         if ErrorReporter.had_error:
             return
 
-        interpreter = Interpreter()
-        interpreter.interpret(expression)
+        self.interpreter.interpret(expression)
 
     def run_file(self, path):
         with open(path, 'r') as file:
@@ -24,6 +25,8 @@ class Lox:
         self.run(source)
         if ErrorReporter.had_error:
             sys.exit(65)
+        if ErrorReporter.had_runtime_error:
+            sys.exit(70)
 
     def run_prompt(self):
         try:

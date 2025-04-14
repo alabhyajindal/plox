@@ -23,6 +23,6 @@ class ErrorReporter:
         ErrorReporter.had_error = True
 
     @staticmethod
-    def runtime_error(message):
-        print(message)
+    def runtime_error(error):
+        print(f'{error.message} \n[line {error.token.line}]')
         ErrorReporter.had_runtime_error = True
