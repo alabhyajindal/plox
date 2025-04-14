@@ -1,6 +1,7 @@
 import sys
 from scanner import Scanner
 from parser import Parser
+from interpreter import Interpreter
 from error_reporter import ErrorReporter
 
 
@@ -14,7 +15,8 @@ class Lox:
         if ErrorReporter.had_error:
             return
 
-        print(expression)
+        interpreter = Interpreter()
+        interpreter.interpret(expression)
 
     def run_file(self, path):
         with open(path, 'r') as file:
