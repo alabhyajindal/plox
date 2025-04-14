@@ -1,6 +1,6 @@
-from lox import Lox
 from expr import *
 from token_type import TokenType
+from error_reporter import ErrorReporter
 
 
 class ParseError(Exception):
@@ -121,7 +121,7 @@ class Parser:
         raise self.error(self.peek(), message)
 
     def error(self, token, message):
-        Lox.token_error(token, message)
+        ErrorReporter.token_error(token, message)
         return ParseError()
 
     def synchronize(self):

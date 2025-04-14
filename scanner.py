@@ -1,6 +1,6 @@
-from lox import Lox
 from lox_token import Token
 from token_type import TokenType
+from error_reporter import ErrorReporter
 
 
 class Scanner:
@@ -73,7 +73,8 @@ class Scanner:
                 elif c.isalpha():
                     self.identifier()
                 else:
-                    Lox.error(self.line, 'Unexpected character.')
+                    ErrorReporter.line_error(
+                        self.line, 'Unexpected character.')
 
     def is_at_end(self):
         return self.current >= len(self.source)
@@ -107,7 +108,7 @@ class Scanner:
             self.advance()
 
         if self.is_at_end():
-            Lox.error(self.line, 'Unterminated string.')
+            ErrorReporter.line_error(self.line, 'Unterminated string.')
             return
 
         self.advance()
