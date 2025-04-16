@@ -35,8 +35,8 @@ def test_scanner():
 
 def test_parser():
     source = '5 + 2 * 3'
-    expected_ast = Binary(left=Literal(5.0), operator=Token(
-        TokenType.PLUS, '+', None, 1), right=Binary(left=Literal(2.0), operator=Token(TokenType.STAR, '*', None, 1), right=Literal(3.0)))
+    expected_ast = BinaryExpr(left=LiteralExpr(5.0), operator=Token(
+        TokenType.PLUS, '+', None, 1), right=BinaryExpr(left=LiteralExpr(2.0), operator=Token(TokenType.STAR, '*', None, 1), right=LiteralExpr(3.0)))
 
     scanner = Scanner(source)
     tokens = scanner.scan_tokens()

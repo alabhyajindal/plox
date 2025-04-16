@@ -8,18 +8,18 @@ class AstPrinter:
 
     def evaluate(self, expr: Expr) -> str:
         match expr:
-            case Binary(left, operator, right):
+            case BinaryExpr(left, operator, right):
                 return self.parenthesize(operator.lexeme, left, right)
 
-            case Grouping(expression):
+            case GroupingExpr(expression):
                 return self.parenthesize("group", expression)
 
-            case Literal(value):
+            case LiteralExpr(value):
                 if value is None:
                     return "nil"
                 return str(value)
 
-            case Unary(operator, right):
+            case UnaryExpr(operator, right):
                 return self.parenthesize(operator.lexeme, right)
 
             case _:
@@ -38,14 +38,14 @@ class AstPrinter:
 
 # Testing the AST printer
 def main():
-    expression = Binary(
-        Unary(
+    expression = BinaryExpr(
+        UnaryExpr(
             Token(TokenType.MINUS, "-", None, 1),
-            Literal(123)
+            LiteralExpr(123)
         ),
         Token(TokenType.STAR, "*", None, 1),
-        Grouping(
-            Literal(45.67)
+        GroupingExpr(
+            LiteralExpr(45.67)
         )
     )
 

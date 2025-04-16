@@ -35,13 +35,13 @@ class Interpreter:
 
     def evaluate(self, expr):
         match expr:
-            case Literal():
+            case LiteralExpr():
                 return self.evaluate_literal(expr)
-            case Grouping():
+            case GroupingExpr():
                 return self.evaluate_grouping(expr)
-            case Unary():
+            case UnaryExpr():
                 return self.evaluate_unary(expr)
-            case Binary():
+            case BinaryExpr():
                 return self.evaluate_binary(expr)
             case VariableExpr():
                 return self.environment.get(expr.name)

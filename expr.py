@@ -9,24 +9,24 @@ class Expr():
 
 
 @dataclass
-class Binary(Expr):
+class BinaryExpr(Expr):
     left: Expr
     operator: Token
     right: Expr
 
 
 @dataclass
-class Grouping(Expr):
+class GroupingExpr(Expr):
     expression: Expr
 
 
 @dataclass
-class Literal():
+class LiteralExpr():
     value: Any
 
 
 @dataclass
-class Unary(Expr):
+class UnaryExpr(Expr):
     operator: Token
     right: Expr
 
