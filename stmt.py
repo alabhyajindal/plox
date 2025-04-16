@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 from lox_token import Token
 from expr import Expr
 
@@ -6,6 +7,11 @@ from expr import Expr
 @dataclass
 class Stmt:
     pass
+
+
+@dataclass
+class BlockStmt:
+    statements: List[Stmt]
 
 
 @dataclass

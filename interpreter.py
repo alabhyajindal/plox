@@ -7,7 +7,8 @@ from error_reporter import ErrorReporter
 
 
 class Interpreter:
-    environment = Environment()
+    def __init__(self):
+        self.environment = Environment()
 
     def interpret(self, statements):
         try:
@@ -32,6 +33,19 @@ class Interpreter:
 
                 self.environment.define(stmt.name.lexeme, value)
                 return None
+            case BlockStmt():
+                self.execute_block(
+                    stmt.statements, Environment(self.environment))
+                return None
+
+    def execute_block(self, statements, environment):
+        previous = self.environment
+        try:
+            self.environment = environment
+            for statement in statements:
+                self.execute(statement)
+        finally:
+            self.environment = previous
 
     def evaluate(self, expr):
         match expr:
