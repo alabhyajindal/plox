@@ -4,7 +4,7 @@ from typing import Any
 
 
 @dataclass
-class Expr():
+class Expr:
     pass
 
 
@@ -27,7 +27,7 @@ class GroupingExpr(Expr):
 
 
 @dataclass
-class LiteralExpr():
+class LiteralExpr(Expr):
     value: Any
 
 
@@ -38,5 +38,5 @@ class UnaryExpr(Expr):
 
 
 @dataclass
-class VariableExpr:
+class VariableExpr(Expr):
     name: Token
