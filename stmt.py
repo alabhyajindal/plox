@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from lox_token import Token
 from expr import Expr
 
 
@@ -15,3 +16,9 @@ class ExpressionStmt:
 @dataclass
 class PrintStmt:
     expression: Expr
+
+
+@dataclass
+class VariableStmt:
+    name: Token
+    initializer: Expr

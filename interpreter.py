@@ -1,11 +1,14 @@
 from expr import *
 from stmt import *
+from environment import Environment
 from token_type import TokenType
 from runtime_error import RuntimeError
 from error_reporter import ErrorReporter
 
 
 class Interpreter:
+    environment = Environment()
+
     def interpret(self, statements):
         try:
             for statement in statements:
@@ -22,6 +25,13 @@ class Interpreter:
                 value = self.evaluate(stmt.expression)
                 print(self.stringify(value))
                 return None
+            case VariableStmt():
+                value = None
+                if stmt.initializer != None:
+                    value = self.evaluate(stmt.initializer)
+
+                self.environment.define(stmt.name.lexeme, value)
+                return None
 
     def evaluate(self, expr):
         match expr:
@@ -33,6 +43,8 @@ class Interpreter:
                 return self.evaluate_unary(expr)
             case Binary():
                 return self.evaluate_binary(expr)
+            case VariableExpr():
+                return self.environment.get(expr.name)
 
     def evaluate_literal(self, expr):
         return expr.value
@@ -115,5 +127,8 @@ class Interpreter:
 
         if isinstance(obj, float) and obj.is_integer:
             return str(int(obj))
+
+        if isinstance(obj, bool):
+            return str(obj).lower()
 
         return str(obj)
