@@ -21,7 +21,7 @@ class Parser:
         return statements
 
     def expression(self):
-        return self.equality()
+        return self.assignment()
 
     def declaration(self):
         try:
@@ -59,6 +59,21 @@ class Parser:
         expr = self.expression()
         self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return ExpressionStmt(expr)
+
+    def assignment(self):
+        expr = self.equality()
+
+        if self.match(TokenType.EQUAL):
+            equals = self.previous()
+            value = self.assignment()
+
+            if isinstance(expr, VariableExpr):
+                name = expr.name
+                return AssignExpr(name, value)
+
+            self.error(equals, "Invalid assignment target.")
+
+        return expr
 
     def equality(self):
         expr = self.comparison()

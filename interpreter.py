@@ -45,6 +45,10 @@ class Interpreter:
                 return self.evaluate_binary(expr)
             case VariableExpr():
                 return self.environment.get(expr.name)
+            case AssignExpr():
+                value = self.evaluate(expr.value)
+                self.environment.assign(expr.name, value)
+                return value
 
     def evaluate_literal(self, expr):
         return expr.value
