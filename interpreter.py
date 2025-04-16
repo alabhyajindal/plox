@@ -37,6 +37,13 @@ class Interpreter:
                 self.execute_block(
                     stmt.statements, Environment(self.environment))
                 return None
+            case IfStmt():
+                if self.is_truthy(self.evaluate(stmt.condition)):
+                    self.execute(stmt.then_branch)
+                elif stmt.else_branch is not None:
+                    self.execute(stmt.else_branch)
+
+                return None
 
     def execute_block(self, statements, environment):
         previous = self.environment
@@ -63,6 +70,17 @@ class Interpreter:
                 value = self.evaluate(expr.value)
                 self.environment.assign(expr.name, value)
                 return value
+            case LogicalExpr():
+                left = self.evaluate(expr.left)
+
+                if expr.operator.type is TokenType.OR:
+                    if self.is_truthy(left):
+                        return left
+                else:
+                    if not self.is_truthy(left):
+                        return left
+
+                return self.evaluate(right)
 
     def evaluate_literal(self, expr):
         return expr.value

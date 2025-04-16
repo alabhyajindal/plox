@@ -32,6 +32,13 @@ class LiteralExpr(Expr):
 
 
 @dataclass
+class LogicalExpr(Expr):
+    left: Expr
+    operator: Token
+    right: Expr
+
+
+@dataclass
 class UnaryExpr(Expr):
     operator: Token
     right: Expr

@@ -20,6 +20,13 @@ class ExpressionStmt(Stmt):
 
 
 @dataclass
+class IfStmt(Stmt):
+    condition: Expr
+    then_branch: Stmt
+    else_branch: Stmt
+
+
+@dataclass
 class PrintStmt(Stmt):
     expression: Expr
 
