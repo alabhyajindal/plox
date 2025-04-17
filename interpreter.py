@@ -33,6 +33,10 @@ class Interpreter:
 
                 self.environment.define(stmt.name.lexeme, value)
                 return None
+            case WhileStmt():
+                while self.is_truthy(self.evaluate(stmt.condition)):
+                    self.execute(stmt.body)
+                return None
             case BlockStmt():
                 self.execute_block(
                     stmt.statements, Environment(self.environment))

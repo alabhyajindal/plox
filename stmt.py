@@ -35,3 +35,9 @@ class PrintStmt(Stmt):
 class VariableStmt(Stmt):
     name: Token
     initializer: Optional[Expr]
+
+
+@dataclass
+class WhileStmt(Stmt):
+    condition: Expr
+    body: Stmt
