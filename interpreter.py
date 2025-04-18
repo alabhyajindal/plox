@@ -1,14 +1,30 @@
+import time
 from expr import *
 from stmt import *
 from environment import Environment
 from token_type import TokenType
+from lox_callable import LoxCallable
+from lox_function import LoxFunction
 from runtime_error import RuntimeError
 from error_reporter import ErrorReporter
 
 
+class Clock(LoxCallable):
+    def arity(self):
+        return 0
+
+    def call(self, interpreter, arguments):
+        return time.time()
+
+    def __str__(self):
+        return "<native fn>"
+
+
 class Interpreter:
     def __init__(self):
-        self.environment = Environment()
+        self.globals = Environment()
+        self.environment = self.globals
+        self.globals.define("clock", Clock)
 
     def interpret(self, statements):
         try:
@@ -21,6 +37,10 @@ class Interpreter:
         match stmt:
             case ExpressionStmt():
                 self.evaluate(stmt.expression)
+                return None
+            case FunctionStmt():
+                function = LoxFunction(stmt)
+                self.environment.define(stmt.name.lexeme, function)
                 return None
             case PrintStmt():
                 value = self.evaluate(stmt.expression)
@@ -68,6 +88,8 @@ class Interpreter:
                 return self.evaluate_unary(expr)
             case BinaryExpr():
                 return self.evaluate_binary(expr)
+            case CallExpr():
+                return self.evaluate_call(expr)
             case VariableExpr():
                 return self.environment.get(expr.name)
             case AssignExpr():
@@ -143,6 +165,23 @@ class Interpreter:
                 return not left == right
             case TokenType.EQUAL:
                 return left == right
+
+    def evaluate_call(self, expr):
+        callee = self.evaluate(expr.callee)
+
+        arguments = []
+        for argument in expr.arguments:
+            arguments.append(self.evaluate(argument))
+
+        if not isinstance(callee, LoxCallable):
+            raise RuntimeError(
+                expr.paren, "Can only call function and classes.")
+
+        if len(arguments) != callee.arity():
+            raise RuntimeError(
+                expr.paren, f"Expected {callee.arity()} arguments but got {len(arguments)}.")
+
+        return callee.call(self, arguments)
 
     def check_number_operand(self, operator, operand):
         if isinstance(operand, float):

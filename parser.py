@@ -25,6 +25,8 @@ class Parser:
 
     def declaration(self):
         try:
+            if self.match(TokenType.FUN):
+                return self.function("function")
             if self.match(TokenType.VAR):
                 return self.var_declaration()
 
@@ -125,6 +127,28 @@ class Parser:
         self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return ExpressionStmt(expr)
 
+    def function(self, kind):
+        name = self.consume(TokenType.IDENTIFIER, f"Expect {kind} name.")
+        self.consume(TokenType.LEFT_PAREN, f"Expect '(' after {kind} name.")
+
+        parameters = []
+        if not self.check(TokenType.RIGHT_PAREN):
+            while True:
+                if len(parameters) >= 255:
+                    self.error(
+                        self.peek(), "Can't have more than 255 parameters.")
+
+                parameters.append(self.consume(
+                    TokenType.IDENTIFIER, "Expect parameter name."))
+                if not self.match(TokenType.COMMA):
+                    break
+
+        self.consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
+
+        self.consume(TokenType.LEFT_BRACE, f"Expect '{{' before {kind} body.")
+        body = self.block()
+        return FunctionStmt(name, parameters, body)
+
     def block(self):
         statements = []
 
@@ -215,7 +239,35 @@ class Parser:
             right = self.unary()
             return UnaryExpr(operator, right)
 
-        return self.primary()
+        return self.call()
+
+    def finish_call(self, callee):
+        arguments = []
+        if not self.check(TokenType.RIGHT_PAREN):
+            while True:
+                if len(arguments) >= 255:
+                    self.error(
+                        self.peek(), "Can't have more than 255 arguments.")
+
+                arguments.append(self.expression())
+                if not self.match(TokenType.COMMA):
+                    break
+
+        paren = self.consume(TokenType.RIGHT_PAREN,
+                             "Expect ')' after arguments.")
+
+        return CallExpr(callee, paren, arguments)
+
+    def call(self):
+        expr = self.primary()
+
+        while True:
+            if self.match(TokenType.LEFT_PAREN):
+                expr = self.finish_call(expr)
+            else:
+                break
+
+        return expr
 
     def primary(self):
         if self.match(TokenType.FALSE):

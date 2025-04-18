@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from lox_token import Token
-from typing import Any
+from typing import List, Any
 
 
 @dataclass
@@ -19,6 +19,13 @@ class BinaryExpr(Expr):
     left: Expr
     operator: Token
     right: Expr
+
+
+@dataclass
+class CallExpr(Expr):
+    callee: Expr
+    paren: Token
+    arguments: List[Expr]
 
 
 @dataclass
