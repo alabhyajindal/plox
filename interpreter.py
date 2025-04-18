@@ -5,6 +5,7 @@ from environment import Environment
 from token_type import TokenType
 from lox_callable import LoxCallable
 from lox_function import LoxFunction
+from return_error import ReturnError
 from runtime_error import RuntimeError
 from error_reporter import ErrorReporter
 
@@ -46,6 +47,12 @@ class Interpreter:
                 value = self.evaluate(stmt.expression)
                 print(self.stringify(value))
                 return None
+            case ReturnStmt():
+                value = None
+                if stmt.value is not None:
+                    value = self.evaluate(stmt.value)
+
+                raise ReturnError(value)
             case VariableStmt():
                 value = None
                 if stmt.initializer != None:
@@ -142,7 +149,7 @@ class Interpreter:
                 return left < right
             case TokenType.LESS_EQUAL:
                 self.check_number_operands(expr.operator, left, right)
-                return left >= right
+                return left <= right
             case TokenType.MINUS:
                 self.check_number_operands(expr.operator, left, right)
                 return left - right

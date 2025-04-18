@@ -39,6 +39,12 @@ class PrintStmt(Stmt):
 
 
 @dataclass
+class ReturnStmt(Stmt):
+    keyword: Token
+    value: Expr
+
+
+@dataclass
 class VariableStmt(Stmt):
     name: Token
     initializer: Optional[Expr]
