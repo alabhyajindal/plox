@@ -8,6 +8,7 @@ from lox_function import LoxFunction
 from return_error import ReturnError
 from runtime_error import RuntimeError
 from error_reporter import ErrorReporter
+from resolver import Resolver
 
 
 class Clock(LoxCallable):
@@ -26,6 +27,7 @@ class Interpreter:
         self.globals = Environment()
         self.environment = self.globals
         self.globals.define("clock", Clock)
+        self.resolver = Resolver(self)
 
     def interpret(self, statements):
         try:
@@ -114,6 +116,19 @@ class Interpreter:
                         return left
 
                 return self.evaluate(right)
+            case VariableExpr():
+                if hasattr(expr, "depth"):
+                    return self.environment.get_at(expr.name, expr.depth)
+                else:
+                    return self.environment.get(expr.name)
+            case AssignExpr():
+                value = self.evaluate(expr.value)
+                if hasattr(expr.name, "depth"):
+                    self.environment.assign_at(
+                        expr.name, value, expr.name.depth)
+                else:
+                    self.environment.assign(expr.name, value)
+                return value
 
     def evaluate_literal(self, expr):
         return expr.value
@@ -218,3 +233,10 @@ class Interpreter:
             return str(obj).lower()
 
         return str(obj)
+
+    def resolve(self, expr, depth):
+        if isinstance(expr, VariableExpr):
+            if not hasattr(expr, "depth"):
+                expr.depth = depth
+            else:
+                expr.depth = depth

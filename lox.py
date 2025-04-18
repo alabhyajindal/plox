@@ -17,6 +17,10 @@ class Lox:
         if ErrorReporter.had_error:
             return
 
+        self.interpreter.resolver.resolve(statements)
+        if ErrorReporter.had_error:
+            return
+
         self.interpreter.interpret(statements)
 
     def run_file(self, path):

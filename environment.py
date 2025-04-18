@@ -28,3 +28,25 @@ class Environment:
             return
 
         raise RuntimeError(name, f"Undefined variable {name.lexeme}.")
+
+    def get_at(self, name, depth):
+        environment = self.ancestor(depth)
+        if environment is not None:
+            return environment.values.get(name.lexeme)
+        return None
+
+    def assign_at(self, name, value, depth):
+        environment = self.ancestor(depth)
+        if environment is not None:
+            environment.values[name.lexeme] = value
+        else:
+            self.assign(name, value)
+
+    def ancestor(self, depth):
+        environment = self
+        for _ in range(depth):
+            if environment is not None:
+                environment = environment.enclosing
+            else:
+                return None
+        return environment
