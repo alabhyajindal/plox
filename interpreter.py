@@ -8,17 +8,7 @@ from lox_function import LoxFunction
 from return_error import ReturnError
 from runtime_error import RuntimeError
 from error_reporter import ErrorReporter
-
-
-class Clock(LoxCallable):
-    def arity(self):
-        return 0
-
-    def call(self, interpreter, arguments):
-        return time.time()
-
-    def __str__(self):
-        return "<native fn>"
+from clock import Clock
 
 
 class Interpreter:

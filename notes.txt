@@ -1,2 +1,0 @@
-at this stage we have a scanner that generates a list of tokens. these tokens are flat - so we want to convert them into a tree like structure that can be traversed and evaluated.
-
